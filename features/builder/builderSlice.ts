@@ -1,7 +1,14 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import type { BuildState, ModuleSpec, Direction, Turn } from '@/lib/geometry';
-import { dirToRot, advanceVec, rotateDir } from '@/lib/geometry';
-import { computeTotals } from '@/lib/rules';
+import {
+  type BuildState,
+  type ModuleSpec,
+  type Direction,
+  type Turn,
+  dirToRot,
+  advanceVec,
+  rotateDir,
+  computeTotals
+} from '@/packages/rules';
 
 const initialState: BuildState = {
   modelId: 'dakota-s',
