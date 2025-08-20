@@ -1,6 +1,6 @@
 'use client';
 
-import Image from 'next/image';
+import NextImage from 'next/image';
 import { useAppDispatch, useAppSelector } from '@/features/hooks';
 import { addAccessory, removeAccessory } from '@/features/builder/builderSlice';
 import type { ModuleSpec } from '@/packages/rules';
@@ -36,7 +36,7 @@ export default function OptionsPanel({ accessories, modules, fabric, legs, setFa
         const data = new XMLSerializer().serializeToString(svg);
         const blob = new Blob([data], { type: 'image/svg+xml' });
         const url = URL.createObjectURL(blob);
-        const img = new Image();
+        const img = new window.Image();
         img.src = url;
         await new Promise(res => { img.onload = () => res(null); });
         ctx.drawImage(img, 0, 0);
@@ -62,14 +62,14 @@ export default function OptionsPanel({ accessories, modules, fabric, legs, setFa
           <div className="flex gap-2">
             {fabricOptions.map(o => (
               <button key={o.id} onClick={()=>setFabric(o)} className={`border p-1 rounded ${fabric?.id===o.id?'ring-2 ring-blue-500':''}`}>
-                <Image src={o.icon} alt={o.name} width={24} height={24}/>
+                <NextImage src={o.icon} alt={o.name} width={24} height={24}/>
               </button>
             ))}
           </div>
           <div className="flex gap-2">
             {legOptions.map(o => (
               <button key={o.id} onClick={()=>setLegs(o)} className={`border p-1 rounded ${legs?.id===o.id?'ring-2 ring-blue-500':''}`}>
-                <Image src={o.icon} alt={o.name} width={24} height={24}/>
+                <NextImage src={o.icon} alt={o.name} width={24} height={24}/>
               </button>
             ))}
           </div>
@@ -80,7 +80,7 @@ export default function OptionsPanel({ accessories, modules, fabric, legs, setFa
             {accessories.map(a => (
               <div key={a.id} className="flex items-center justify-between text-sm">
                 <div className="flex items-center gap-2">
-                  <Image src={a.imageUrl} alt={a.name} width={32} height={32}/>
+                  <NextImage src={a.imageUrl} alt={a.name} width={32} height={32}/>
                   <span>{a.name}</span>
                 </div>
                 <div className="flex items-center gap-1">
