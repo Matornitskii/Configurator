@@ -2,17 +2,20 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/features/hooks';
-import { moveAccessory } from '@/features/builder/builderSlice';
+import { moveAccessory, fitToView as fitAction } from '@/features/builder/builderSlice';
 import type { ModuleSpec } from '@/packages/rules';
+import type { Option } from '@/components/options/OptionsPanel';
 
 interface Accessory { id:string; imageUrl:string; }
 
 interface Props {
   modulesById: Record<string, ModuleSpec>;
   accessoriesById: Record<string, Accessory>;
+  fabric?: Option|null;
+  legs?: Option|null;
 }
 
-export default function AssemblyCanvas({ modulesById, accessoriesById }: Props){
+export default function AssemblyCanvas({ modulesById, accessoriesById, fabric, legs }: Props){
   const dispatch = useAppDispatch();
   const { placed, freeItems, totalSize, totalSeats, fitToView:fit } = useAppSelector(s=>s.builder);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -67,8 +70,10 @@ export default function AssemblyCanvas({ modulesById, accessoriesById }: Props){
   const onPointerMove = (e:React.PointerEvent) => {
     if(dragAcc){
       const rect = containerRef.current!.getBoundingClientRect();
-      const x = (e.clientX - rect.left - view.x)/view.scale;
-      const y = (e.clientY - rect.top - view.y)/view.scale;
+      let x = (e.clientX - rect.left - view.x)/view.scale;
+      let y = (e.clientY - rect.top - view.y)/view.scale;
+      x = Math.max(0, Math.min(totalSize.width, x));
+      y = Math.max(0, Math.min(totalSize.depth, y));
       dispatch(moveAccessory({id:dragAcc,x,y}));
     }else if(panStart){
       setView(v=>({...v, x:e.clientX - panStart.x, y:e.clientY - panStart.y}));
@@ -86,17 +91,21 @@ export default function AssemblyCanvas({ modulesById, accessoriesById }: Props){
             const rot = p.rotation % 180 !== 0;
             const w = rot ? spec.bbox.depth : spec.bbox.width;
             const h = rot ? spec.bbox.width : spec.bbox.depth;
-            return <rect key={i} x={p.x} y={p.y} width={w} height={h} fill="#eee" stroke="var(--brand-gray)" />;
+            const href = spec.images.sceneUrl;
+            return <image key={i} href={href} x={p.x} y={p.y} width={w} height={h} preserveAspectRatio="none" />;
           })}
           {freeItems.map(f=>{
             const acc = accessoriesById[f.accessoryId];
             if(!acc) return null;
-            return <image key={f.id} data-acc={f.id} href={acc.imageUrl} x={f.x} y={f.y} width={80} height={80}/>;
+            return <image key={f.id} data-acc={f.id} href={acc.imageUrl} x={f.x} y={f.y} width={80} height={80} className="cursor-move hover:opacity-80"/>;
           })}
         </g>
       </svg>
-      <div className="absolute right-4 top-4 text-sm text-gray-700 bg-white/70 px-2 py-1 rounded">
-        {`Ш×Г: ${totalSize.width}×${totalSize.depth} мм · Места: ${totalSeats}`}
+      <button className="absolute left-2 top-2 bg-white/80 rounded px-2" onClick={()=>dispatch(fitAction())}>↺</button>
+      <div className="absolute right-4 top-4 flex items-center gap-2 text-sm text-gray-700 bg-white/70 px-2 py-1 rounded">
+        {fabric && <img src={fabric.icon} alt={fabric.name} className="w-4 h-4"/>}
+        {legs && <img src={legs.icon} alt={legs.name} className="w-4 h-4"/>}
+        <span>{`Ш×Г: ${totalSize.width}×${totalSize.depth} мм · Места: ${totalSeats}`}</span>
       </div>
     </div>
   );

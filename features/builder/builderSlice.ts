@@ -81,6 +81,27 @@ const slice = createSlice({
       state.isComplete = isComplete(state, action.payload.specs);
       state.fitToView++;
     },
+    removeAt: (state, action: PayloadAction<{index:number; specs: SpecsMap;}>) => {
+      if(action.payload.index < 0 || action.payload.index >= state.chain.length) return;
+      state.chain.splice(action.payload.index,1);
+      state.dir = 'E';
+      state.cursor = {x:0,y:0};
+      state.placed = [];
+      for (const id of state.chain) {
+        const spec = action.payload.specs[id];
+        const rotation = dirToRot(state.dir);
+        state.placed.push({ moduleId: id, x: state.cursor.x, y: state.cursor.y, rotation });
+        const {dx, dy} = advanceVec(state.dir, spec.bbox.width);
+        state.cursor.x += dx; state.cursor.y += dy;
+        const t = (spec.turn ?? 0) as Turn;
+        state.dir = rotateDir(state.dir, t);
+      }
+      const {width, depth, seats} = computeTotals(state.placed, action.payload.specs);
+      state.totalSize = {width, depth};
+      state.totalSeats = seats;
+      state.isComplete = isComplete(state, action.payload.specs);
+      state.fitToView++;
+    },
     addAccessory: (state, action: PayloadAction<{accessoryId: string}>) => {
       state.freeItems.push({ id: nanoid(), accessoryId: action.payload.accessoryId, x: 0, y: 0 });
     },
@@ -100,6 +121,6 @@ const slice = createSlice({
   }
 });
 
-export const { reset, selectModel, addModule, undo, addAccessory, removeAccessory, moveAccessory, fitToView } = slice.actions;
+export const { reset, selectModel, addModule, undo, removeAt, addAccessory, removeAccessory, moveAccessory, fitToView } = slice.actions;
 export default slice.reducer;
 
