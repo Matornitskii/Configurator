@@ -16,7 +16,7 @@ export function rotateDir(d:Direction, turn:Turn):Direction{
 }
 
 export function computeTotals(
-  placed: {x:number;y:number;moduleId:string}[],
+  placed: {x:number;y:number;moduleId:string;rotation?:0|90|180|270}[],
   specs: Record<string, ModuleSpec>
 ){
   if(placed.length===0) return {width:0, depth:0, seats:0};
@@ -24,8 +24,11 @@ export function computeTotals(
   for(const p of placed){
     const m = specs[p.moduleId];
     seats += m.seatCount ?? 0;
-    const x2 = p.x + m.bbox.width;
-    const y2 = p.y + m.bbox.depth;
+    const rotated = (p.rotation ?? 0) % 180 !== 0;
+    const w = rotated ? m.bbox.depth : m.bbox.width;
+    const d = rotated ? m.bbox.width : m.bbox.depth;
+    const x2 = p.x + w;
+    const y2 = p.y + d;
     minX = Math.min(minX, p.x); maxX = Math.max(maxX, x2);
     minY = Math.min(minY, p.y); maxY = Math.max(maxY, y2);
   }
