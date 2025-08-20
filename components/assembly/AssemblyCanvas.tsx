@@ -84,7 +84,7 @@ export default function AssemblyCanvas({ modulesById, accessoriesById, fabric, l
 
   return (
     <div ref={containerRef} className="relative w-full h-full bg-gray-100 overflow-hidden" onWheel={onWheel} onPointerMove={onPointerMove} onPointerUp={stopDrag} onPointerLeave={stopDrag} onPointerDown={onPointerDown}>
-      <svg className="absolute inset-0 w-full h-full touch-none">
+      <svg id="scene-svg" className="absolute inset-0 w-full h-full touch-none">
         <g transform={`translate(${view.x} ${view.y}) scale(${view.scale})`}>
           {placed.map((p,i)=>{
             const spec = modulesById[p.moduleId];

@@ -46,7 +46,7 @@ export default function Page(){
       </header>
 
       <section className="grid" style={{gridTemplateColumns:'20vw 40vw 40vw', height:'100%'}}>
-        <div className="h-full border-r"><OptionsPanel accessories={accessories} fabric={fabric} legs={legs} setFabric={setFabric} setLegs={setLegs} t={t}/></div>
+        <div className="h-full border-r"><OptionsPanel accessories={accessories} modules={modules} fabric={fabric} legs={legs} setFabric={setFabric} setLegs={setLegs} t={t}/></div>
         <div className="grid" style={{gridTemplateRows:'1fr 10%'}}>
           <div className="p-3 overflow-auto"><ModuleGrid modules={modules} rules={rules} modulesById={modulesById} t={t}/></div>
           <div className="p-3"><ActionBar modulesById={modulesById} t={t}/></div>
