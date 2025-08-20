@@ -3,7 +3,6 @@ import type { BuildState, ModuleSpec, Turn } from '@/packages/rules';
 import { dirToRot, advanceVec, rotateDir, computeTotals, isComplete } from '@/packages/rules';
 
 type SpecsMap = Record<string, ModuleSpec>;
-
 const initialState: BuildState = {
   modelId: 'dakota-s',
   chain: [],
