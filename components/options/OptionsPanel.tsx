@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { useAppDispatch, useAppSelector } from '@/features/hooks';
 import { addAccessory, removeAccessory } from '@/features/builder/builderSlice';
+import type { ModuleSpec } from '@/packages/rules';
 
 export interface Accessory { id: string; name: string; imageUrl: string; }
 export interface Option { id: string; name: string; icon: string; }
@@ -16,18 +17,42 @@ const legOptions: Option[] = [
   {id:'leg2', name:'Legs 2', icon:'/brand/destyle_gray_alfa.png'}
 ];
 
-export default function OptionsPanel({ accessories, fabric, legs, setFabric, setLegs, t }:{ accessories: Accessory[]; fabric:Option|null; legs:Option|null; setFabric:(o:Option)=>void; setLegs:(o:Option)=>void; t:(k:string)=>string; }){
+export default function OptionsPanel({ accessories, modules, fabric, legs, setFabric, setLegs, t }:{ accessories: Accessory[]; modules: ModuleSpec[]; fabric:Option|null; legs:Option|null; setFabric:(o:Option)=>void; setLegs:(o:Option)=>void; t:(k:string)=>string; }){
   const dispatch = useAppDispatch();
   const freeItems = useAppSelector(s => s.builder.freeItems);
-  const isComplete = useAppSelector(s => s.builder.isComplete);
+  const buildState = useAppSelector(s => s.builder);
+  const isComplete = buildState.isComplete;
   const count = (id:string) => freeItems.filter(f => f.accessoryId===id).length;
   const disabled = !isComplete;
   const download = async () => {
-    const res = await fetch('/api/export', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({title:'Sofa', scene:''})});
+    const svg = document.getElementById('scene-svg') as SVGSVGElement | null;
+    let screenshot = '';
+    if (svg) {
+      const rect = svg.getBoundingClientRect();
+      const canvas = document.createElement('canvas');
+      canvas.width = rect.width; canvas.height = rect.height;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        const data = new XMLSerializer().serializeToString(svg);
+        const blob = new Blob([data], { type: 'image/svg+xml' });
+        const url = URL.createObjectURL(blob);
+        const img = new Image();
+        img.src = url;
+        await new Promise(res => { img.onload = () => res(null); });
+        ctx.drawImage(img, 0, 0);
+        URL.revokeObjectURL(url);
+        screenshot = canvas.toDataURL('image/png');
+      }
+    }
+    const payload = { buildState, modules, accessories, options:{ fabric, legs }, screenshot };
+    const res = await fetch('/api/export', { method: 'POST', body: JSON.stringify(payload) });
     const blob = await res.blob();
     const url = URL.createObjectURL(blob);
+    const d = new Date();
+    const pad = (n:number) => String(n).padStart(2,'0');
+    const filename = `Model_${buildState.modelId}__${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}_${pad(d.getHours())}${pad(d.getMinutes())}.pdf`;
     const a = document.createElement('a');
-    a.href = url; a.download = 'sofa.pdf'; a.click();
+    a.href = url; a.download = filename; a.click();
     URL.revokeObjectURL(url);
   };
   return (
