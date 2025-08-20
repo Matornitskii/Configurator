@@ -1,0 +1,9 @@
+[
+  {
+    "modelId": "dakota-s",
+    "allow": false,
+    "prevConnector": "rightOpen",
+    "nextConnector": "leftCap",
+    "reason": "глухой к глухому нельзя"
+  }
+]

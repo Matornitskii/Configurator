@@ -1,0 +1,68 @@
+[
+  {
+    "id": "ksl_2",
+    "sku": "KSL_2",
+    "modelId": "dakota-s",
+    "name": "Секция левая",
+    "short": "Левый край (2 места)",
+    "bbox": {
+      "width": 1400,
+      "depth": 1000
+    },
+    "connectors": {
+      "left": "leftCap",
+      "right": "rightOpen"
+    },
+    "allowedAsFirst": true,
+    "allowedAsLast": false,
+    "seatCount": 2,
+    "images": {
+      "thumbUrl": "/thumbs/KSL_2.png",
+      "sceneUrl": "/scene/KSL_2.png"
+    }
+  },
+  {
+    "id": "corner_l",
+    "sku": "CORNER_L",
+    "modelId": "dakota-s",
+    "name": "Угол левый",
+    "short": "Поворот на 90° влево",
+    "bbox": {
+      "width": 1000,
+      "depth": 1000
+    },
+    "connectors": {
+      "left": "leftOpen",
+      "right": "rightOpen"
+    },
+    "allowedAsFirst": false,
+    "allowedAsLast": false,
+    "seatCount": 1,
+    "images": {
+      "thumbUrl": "/thumbs/CORNER_L.png",
+      "sceneUrl": "/scene/CORNER_L.png"
+    }
+  },
+  {
+    "id": "ksr_2",
+    "sku": "KSR_2",
+    "modelId": "dakota-s",
+    "name": "Секция правая",
+    "short": "Правый край (2 места)",
+    "bbox": {
+      "width": 1400,
+      "depth": 1000
+    },
+    "connectors": {
+      "left": "leftOpen",
+      "right": "rightCap"
+    },
+    "allowedAsFirst": false,
+    "allowedAsLast": true,
+    "seatCount": 2,
+    "images": {
+      "thumbUrl": "/thumbs/KSR_2.png",
+      "sceneUrl": "/scene/KSR_2.png"
+    }
+  }
+]

@@ -1,0 +1,22 @@
+[
+  {
+    "id": "pouf_s",
+    "kind": "pouf",
+    "name": "Пуф S",
+    "size": "600x600",
+    "imageUrl": "/thumbs/pouf_s.png"
+  },
+  {
+    "id": "chair_a",
+    "kind": "chair",
+    "name": "Кресло A",
+    "imageUrl": "/thumbs/chair_a.png"
+  },
+  {
+    "id": "pillow_m",
+    "kind": "pillow",
+    "name": "Подушка M",
+    "size": "500x500",
+    "imageUrl": "/thumbs/pillow_m.png"
+  }
+]

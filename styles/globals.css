@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root{
+  --brand-bg:#f5f6f7;
+  --brand-gray:#6b6f73;
+  --brand-red:#e15a63;
+}
+html,body{height:100%;background:var(--brand-bg);font-family: 'Comfortaa', system-ui, Segoe UI, Roboto, Arial, sans-serif;}
+*{box-sizing:border-box}
+/* hide scrollbars */
+::-webkit-scrollbar{display:none}
