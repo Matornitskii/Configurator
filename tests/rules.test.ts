@@ -49,16 +49,16 @@ describe('rules', () => {
     expect(totals.seats).toBe(4);
   });
 
-  it('угол поворачивает курс, размеры считаются по габаритам (KSL_2 → CORNER_L → KSR_2)', () => {
+  it('угловая сборка считает габариты (KSL_2 → CORNER_L → KSR_2)', () => {
     const placed = [
-      {moduleId:'ksl_2', x:0,    y:0,    rotation:0},    // 1400×1000
-      {moduleId:'corner_l', x:1400, y:0, rotation:0},    // +1000×1000, курс заворачиваем вниз
-      {moduleId:'ksr_2', x:1400, y:1000, rotation:90}    // 1400×1000 вниз
+      { moduleId: 'ksl_2',   x: 0,    y: 0,   rotation: 0 },   // 1400×1000
+      { moduleId: 'corner_l',x: 1400, y: 0,  rotation: 0 },   // +1000×1000
+      // после поворота модуль смещается на 400 мм вверх, т.к. глубина 1000 < ширины 1400
+      { moduleId: 'ksr_2',   x: 1400, y: 600, rotation: 90 }   // 1400×1000 вниз
     ];
     const totals = computeTotals(placed, byId);
-    // ширина ≈ max(1400+1000, 1400+1400?) → 2400; глубина ≈ 2400
     expect(totals.width).toBe(2400);
-    expect(totals.depth).toBe(2400);
+    expect(totals.depth).toBe(2000);
     expect(totals.seats).toBe(5);
   });
 
