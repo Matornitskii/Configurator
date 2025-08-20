@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
 import ModelCarousel, { type Model } from '@/components/carousel/ModelCarousel';
-import OptionsPanel, { type Accessory } from '@/components/options/OptionsPanel';
+import OptionsPanel, { type Accessory, type Option } from '@/components/options/OptionsPanel';
 import ModuleGrid from '@/components/grid/ModuleGrid';
 import ActionBar from '@/components/actions/ActionBar';
 import AssemblyCanvas from '@/components/assembly/AssemblyCanvas';
@@ -18,6 +18,8 @@ export default function Page(){
   const [modules,setModules] = useState<ModuleSpec[]>([]);
   const [rules,setRules] = useState<CompatibilityRule[]>([]);
   const [accessories,setAccessories] = useState<Accessory[]>([]);
+  const [fabric,setFabric] = useState<Option|null>(null);
+  const [legs,setLegs] = useState<Option|null>(null);
 
   useEffect(() => {
     fetch('/mock/models.json').then(r=>r.json()).then(setModels);
@@ -44,14 +46,14 @@ export default function Page(){
       </header>
 
       <section className="grid" style={{gridTemplateColumns:'20vw 40vw 40vw', height:'100%'}}>
-        <div className="h-full border-r"><OptionsPanel accessories={accessories} t={t}/></div>
+        <div className="h-full border-r"><OptionsPanel accessories={accessories} fabric={fabric} legs={legs} setFabric={setFabric} setLegs={setLegs} t={t}/></div>
         <div className="grid" style={{gridTemplateRows:'1fr 10%'}}>
-          <div className="p-3 overflow-auto"><ModuleGrid modules={modules} rules={rules} modulesById={modulesById}/></div>
+          <div className="p-3 overflow-auto"><ModuleGrid modules={modules} rules={rules} modulesById={modulesById} t={t}/></div>
           <div className="p-3"><ActionBar modulesById={modulesById} t={t}/></div>
         </div>
         <div className="grid" style={{gridTemplateRows:'1fr 1fr'}}>
-          <div className="p-3"><AssemblyCanvas modulesById={modulesById} accessoriesById={accessoriesById}/></div>
-          <ChosenList modulesById={modulesById}/>
+          <div className="p-3"><AssemblyCanvas modulesById={modulesById} accessoriesById={accessoriesById} fabric={fabric} legs={legs}/></div>
+          <ChosenList modulesById={modulesById} t={t}/>
         </div>
       </section>
     </main>
