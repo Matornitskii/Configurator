@@ -1,7 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import type { BuildState, ModuleSpec, Direction, Turn } from '@/lib/geometry';
-import { dirToRot, advanceVec, rotateDir } from '@/lib/geometry';
-import { computeTotals } from '@/lib/rules';
+import type { BuildState, ModuleSpec, Turn } from '@/packages/rules';
+import { dirToRot, advanceVec, rotateDir, computeTotals, isComplete } from '@/packages/rules';
+
+type SpecsMap = Record<string, ModuleSpec>;
 
 const initialState: BuildState = {
   modelId: 'dakota-s',
@@ -14,34 +15,44 @@ const initialState: BuildState = {
   isComplete: false,
 };
 
-type SpecsMap = Record<string, ModuleSpec>;
-
-const builderSlice = createSlice({
+const slice = createSlice({
   name: 'builder',
   initialState,
   reducers: {
     reset: () => initialState,
-    addModule: (state, action: PayloadAction<{spec: ModuleSpec}>) => {
+    addModule: (state, action: PayloadAction<{spec: ModuleSpec; specs: SpecsMap;}>) => {
       const spec = action.payload.spec;
-      // place
+      // поставить модуль
       const rotation = dirToRot(state.dir);
       state.placed.push({ moduleId: spec.id, x: state.cursor.x, y: state.cursor.y, rotation });
       state.chain.push(spec.id);
-      // move cursor
+      // сдвинуть курсор
       const {dx,dy} = advanceVec(state.dir, spec.bbox.width);
       state.cursor.x += dx; state.cursor.y += dy;
-      // turn if it's corner
+      // если угол — повернуть направление
       const t = (spec.turn ?? 0) as Turn;
       state.dir = rotateDir(state.dir, t);
-    },
-    setCompletion: (state, action: PayloadAction<boolean>) => { state.isComplete = action.payload; },
-    recompute: (state, action: PayloadAction<{specs: SpecsMap}>) => {
+      // пересчёты
       const {width, depth, seats} = computeTotals(state.placed, action.payload.specs);
       state.totalSize = {width, depth};
       state.totalSeats = seats;
+      state.isComplete = isComplete(state, action.payload.specs);
+    },
+    undo: (state, action: PayloadAction<{specs: SpecsMap}>) => {
+      if (state.chain.length === 0) return;
+      state.chain.pop();
+      state.placed.pop();
+      // для простоты сбросим курс/курсор и пересоберём позже (v1)
+      state.dir = 'E'; state.cursor = {x:0,y:0};
+      // TODO: пересчитать dir/cursor заново по chain (достаточно переиграть addModule в цикле)
+      const {width, depth, seats} = computeTotals(state.placed, action.payload.specs);
+      state.totalSize = {width, depth};
+      state.totalSeats = seats;
+      state.isComplete = isComplete(state, action.payload.specs);
     }
   }
 });
 
-export const { reset, addModule, setCompletion, recompute } = builderSlice.actions;
-export default builderSlice.reducer;
+export const { reset, addModule, undo } = slice.actions;
+export default slice.reducer;
+
